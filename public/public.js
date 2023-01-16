@@ -15,25 +15,42 @@ let botonServiciosHtml = document.getElementById("servicios");
 
 //recoger barra de navegacion para insertar debajo el section
 let barraNav = document.getElementById("nav");
+let footerHtml = document.getElementById("footer");
 
 //crear elementos
 const sectionElement = document.createElement("section");
 sectionElement.className = "section";
 sectionElement.style.background = "rgb(41, 207, 179)";
 
+let btnServicio = document.createElement("button");
+let btnTicket = document.createElement("button");
+btnServicio.className = "btn btn-success m-2";
+btnTicket.className = "btn btn-success m-2";
+btnServicio.textContent = "Añadir";
+btnTicket.textContent = "Añadir";
+btnServicio.addEventListener("click",FormularioInsert);
+btnTicket.addEventListener("click",FormularioInsert);
+
+let divAñadir = document.createElement("div");
+divAñadir.style.background = "rgb(41, 207, 179)";
+divAñadir.className = "m-0 h-100";
+
 barraNav.insertAdjacentElement("afterend", sectionElement);
+footerHtml.insertAdjacentElement("beforebegin", divAñadir);
 
 // añadir los eventos para el fech
 botonServiciosHtml.addEventListener("click", async () => {
   resultadoConsulta = await getDatos("services/");
   crearFragmentoFetch(resultadoConsulta, "servicios");
   insertarHtml(fragTable, sectionElement);
+  insertarHtml(btnServicio, divAñadir);
 });
 
 botonTicketsHtml.addEventListener("click", async () => {
   resultadoConsulta = await getDatos("tickets/");
   crearFragmentoFetch(resultadoConsulta, "tickets");
   insertarHtml(fragTable, sectionElement);
+  insertarHtml(btnTicket, divAñadir);
 });
 
 /*  usuarios:
@@ -44,6 +61,7 @@ botonUsuariosHtml.addEventListener("click", async () => {
 }); */
 
 const crearFragmentoFetch = (consulta, valor) => {
+  console.log(document.body.children);
   console.log(valor);
   console.log(consulta);
 
@@ -208,13 +226,17 @@ const crearFragmentoFetch = (consulta, valor) => {
 
 const insertarHtml = (elementoInsertar, lugar) => {
   if (lugar.childNodes.length > 0) {
-    lugar.childNodes.forEach((element) => {
-      element.remove();
-    });
+    limpiarElementos(lugar);
     lugar.appendChild(elementoInsertar);
   } else {
     lugar.appendChild(elementoInsertar);
   }
 };
 
+const limpiarElementos = (lugarLimpiar) => {
+  lugarLimpiar.childNodes.forEach((element) => {
+    element.remove();
+  });
+}
 
+const FormularioInsert = () => {}
