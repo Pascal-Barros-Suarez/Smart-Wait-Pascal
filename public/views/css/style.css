@@ -1,0 +1,29 @@
+h1 {
+  color: white;
+}
+
+.btnav {
+  background: rgb(137, 137, 137);
+  color: white;
+  border-radius: 15px;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.btnBorrar {
+    background-color: rgb(120, 120, 120);
+  color: white;
+  border: 1px solid black;
+  border-radius: 15px;
+}
+.btnBorrar:hover {
+  background-color: rgb(255, 255, 255);
+  color: rgb(227, 18, 18);
+  border: 2px solid black;
+  border-radius: 15px;
+}
+
+.espaciadoBoton {
+  padding: 5px;
+}
