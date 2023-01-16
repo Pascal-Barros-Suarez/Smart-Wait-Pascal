@@ -14,7 +14,7 @@ let botonTicketsHtml = document.getElementById("tickets");
 let botonServiciosHtml = document.getElementById("servicios");
 
 //recoger barra de navegacion para insertar debajo el section
-let barraNav = document.getElementById("nav");
+let barraNavHTML = document.getElementById("nav");
 let footerHtml = document.getElementById("footer");
 
 //crear elementos
@@ -22,35 +22,36 @@ const sectionElement = document.createElement("section");
 sectionElement.className = "section";
 sectionElement.style.background = "rgb(41, 207, 179)";
 
-let btnServicio = document.createElement("button");
-let btnTicket = document.createElement("button");
-btnServicio.className = "btn btn-success m-2";
-btnTicket.className = "btn btn-success m-2";
-btnServicio.textContent = "Añadir";
-btnTicket.textContent = "Añadir";
-btnServicio.addEventListener("click",FormularioInsert);
-btnTicket.addEventListener("click",FormularioInsert);
+let btnServicioElement = document.createElement("button");
+btnServicioElement.className = "btn btn-success m-2";
+btnTicketElement.className = "btn btn-success m-2";
+btnServicioElement.textContent = "Añadir";
+btnServicioElement.addEventListener("click",FormularioInsert);
 
-let divAñadir = document.createElement("div");
-divAñadir.style.background = "rgb(41, 207, 179)";
-divAñadir.className = "m-0 h-100";
+let btnTicketElement = document.createElement("button");
+btnTicketElement.textContent = "Añadir";
+btnTicketElement.addEventListener("click",FormularioInsert);
 
-barraNav.insertAdjacentElement("afterend", sectionElement);
-footerHtml.insertAdjacentElement("beforebegin", divAñadir);
+let divAñadirElement = document.createElement("div");
+divAñadirElement.style.background = "rgb(41, 207, 179)";
+divAñadirElement.className = "m-0 h-100";
+
+barraNavHTML.insertAdjacentElement("afterend", sectionElement);
+footerHtml.insertAdjacentElement("beforebegin", divAñadirElement);
 
 // añadir los eventos para el fech
 botonServiciosHtml.addEventListener("click", async () => {
   resultadoConsulta = await getDatos("services/");
   crearFragmentoFetch(resultadoConsulta, "servicios");
   insertarHtml(fragTable, sectionElement);
-  insertarHtml(btnServicio, divAñadir);
+  insertarHtml(btnServicioElement, divAñadirElement);
 });
 
 botonTicketsHtml.addEventListener("click", async () => {
   resultadoConsulta = await getDatos("tickets/");
   crearFragmentoFetch(resultadoConsulta, "tickets");
   insertarHtml(fragTable, sectionElement);
-  insertarHtml(btnTicket, divAñadir);
+  insertarHtml(btnTicketElement, divAñadirElement);
 });
 
 /*  usuarios:
@@ -66,14 +67,14 @@ const crearFragmentoFetch = (consulta, valor) => {
   console.log(consulta);
 
   if (consulta.length <= 0) {
-    let parrafoEstaVacio = document.createElement("p");
-    parrafoEstaVacio.className = "text-center m-0 p-3";
-    parrafoEstaVacio.innerText = "No hay datos que mostrar";
-    insertarHtml(parrafoEstaVacio, fragTable);
+    let parrafoEstaVacioElement = document.createElement("p");
+    parrafoEstaVacioElement.className = "text-center m-0 p-3";
+    parrafoEstaVacioElement.innerText = "No hay datos que mostrar";
+    insertarHtml(parrafoEstaVacioElement, fragTable);
   } else {
-    let table = document.createElement("table");
-    table.className = "table table-striped m-0 h-100";
-    table.id = "tablaInformativa";
+    let tableElement = document.createElement("table");
+    tableElement.className = "table table-striped m-0 h-100";
+    tableElement.id = "tablaInformativa";
 
     if (valor == "servicios") {
       // creaacion de elementos para titulo
@@ -141,9 +142,9 @@ const crearFragmentoFetch = (consulta, valor) => {
         tr.appendChild(tdCampo2);
         tr.insertAdjacentElement("afterbegin", tdCampo1);
         tr.appendChild(tdCampo3);
-        table.insertAdjacentElement("beforeend", tr);
+        tableElement.insertAdjacentElement("beforeend", tr);
       }
-      table.insertAdjacentElement("afterbegin", thead);
+      tableElement.insertAdjacentElement("afterbegin", thead);
     } else if (valor == "tickets") {
       // creaacion de elementos para titulo
       let thead = document.createElement("thead");
@@ -213,14 +214,14 @@ const crearFragmentoFetch = (consulta, valor) => {
         tr.insertAdjacentElement("afterbegin", tdCampo1);
         tr.appendChild(tdCampo3);
         tr.appendChild(tdCampo4);
-        table.insertAdjacentElement("beforeend", tr);
+        tableElement.insertAdjacentElement("beforeend", tr);
       }
-      table.insertAdjacentElement("afterbegin", thead);
+      tableElement.insertAdjacentElement("afterbegin", thead);
     } else {
       // Ampliacion para la tabla de usuarios en el momento que se ponga un sistema login
       // actualmente trabajando en sistema login en clases de fernando 16/01/23
     }
-    insertarHtml(table, fragTable);
+    insertarHtml(tableElement, fragTable);
   }
 };
 
@@ -239,4 +240,7 @@ const limpiarElementos = (lugarLimpiar) => {
   });
 }
 
-const FormularioInsert = () => {}
+const FormularioInsert = () => {
+  limpiarElementos(sectionElement);
+  limpiarElementos(divH);
+}
