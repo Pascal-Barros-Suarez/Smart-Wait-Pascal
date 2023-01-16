@@ -3,9 +3,40 @@ import { getDatos } from "./clases/consultaApi.js";
 import { Ticket } from "./clases/tickets.js";
 import { Servicio } from "./clases/servicios.js";
 
+//funciones
+const insertarHtml = (elementoInsertar, lugar) => {
+  if (lugar.childNodes.length > 0) {
+    limpiarElementos(lugar);
+    lugar.appendChild(elementoInsertar);
+  } else {
+    lugar.appendChild(elementoInsertar);
+  }
+};
+
+const limpiarElementos = (lugarLimpiar) => {
+  lugarLimpiar.childNodes.forEach((element) => {
+    element.remove();
+  });
+};
+
+const FormularioInsert = (valor) => {
+  limpiarElementos(sectionElement);
+  limpiarElementos(divAñadirElement);
+
+  if (valor === "Servicio") {
+    crearFragmentoFormularioServicio();
+  } else if (valor === "Ticket") {
+    //
+  }
+};
+
+////////////////////////////////  fin de funciones  ////////////////////////////////
+
 // declarar variables
 let resultadoConsulta;
 let fragTable = document.createDocumentFragment();
+let fragFormServicios = document.createDocumentFragment();
+let fragFormTickets = document.createDocumentFragment();
 
 // recoger datos del front
 // recoger botones del front
@@ -24,13 +55,13 @@ sectionElement.style.background = "rgb(41, 207, 179)";
 
 let btnServicioElement = document.createElement("button");
 btnServicioElement.className = "btn btn-success m-2";
-btnTicketElement.className = "btn btn-success m-2";
 btnServicioElement.textContent = "Añadir";
-btnServicioElement.addEventListener("click",FormularioInsert);
+btnServicioElement.addEventListener("click", FormularioInsert, "Servicio");
 
 let btnTicketElement = document.createElement("button");
+btnTicketElement.className = "btn btn-success m-2";
 btnTicketElement.textContent = "Añadir";
-btnTicketElement.addEventListener("click",FormularioInsert);
+btnTicketElement.addEventListener("click", FormularioInsert, "Ticket");
 
 let divAñadirElement = document.createElement("div");
 divAñadirElement.style.background = "rgb(41, 207, 179)";
@@ -62,7 +93,6 @@ botonUsuariosHtml.addEventListener("click", async () => {
 }); */
 
 const crearFragmentoFetch = (consulta, valor) => {
-  console.log(document.body.children);
   console.log(valor);
   console.log(consulta);
 
@@ -80,6 +110,7 @@ const crearFragmentoFetch = (consulta, valor) => {
       // creaacion de elementos para titulo
       let thead = document.createElement("thead");
       let tr1 = document.createElement("tr");
+
       let thCampo0 = document.createElement("th");
       let thCampo1 = document.createElement("th");
       let thCampo2 = document.createElement("th");
@@ -225,22 +256,61 @@ const crearFragmentoFetch = (consulta, valor) => {
   }
 };
 
-const insertarHtml = (elementoInsertar, lugar) => {
-  if (lugar.childNodes.length > 0) {
-    limpiarElementos(lugar);
-    lugar.appendChild(elementoInsertar);
-  } else {
-    lugar.appendChild(elementoInsertar);
-  }
+/* <form>
+  <div class="mb-3">
+    <label for="exampleInputEmail1" class="form-label">Email address</label>
+    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+    <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+  </div>
+  <div class="mb-3">
+    <label for="exampleInputPassword1" class="form-label">Password</label>
+    <input type="password" class="form-control" id="exampleInputPassword1">
+  </div>
+  <div class="mb-3 form-check">
+    <input type="checkbox" class="form-check-input" id="exampleCheck1">
+    <label class="form-check-label" for="exampleCheck1">Check me out</label>
+  </div>
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form> */
+
+const crearFragmentoFormularioServicio = () => {
+  let formElement = document.createElement("form");
+
+  let div1Element = document.createElement("div");
+  div1Element.className = "mb-3";
+
+  let div2Element = document.createElement("div");
+  div2Element.className = "mb-3";
+
+  let labelNombreElement = document.createElement("label");
+  labelNombreElement.setAttribute("for", "nombre");
+  labelNombreElement.className = "formm-label";
+
+  let labelNumeroElement = document.createElement("label");
+  labelNumeroElement.setAttribute("for", "numero");
+  labelNumeroElement.className = "formm-label";
+
+  let inputNombreElement = document.createElement("input");
+  inputNombreElement.type = "text";
+  inputNombreElement.className = "formm-input";
+  inputNombreElement.id = "nombre";
+
+  let inputNumeroElement = document.createElement("input");
+  inputNumeroElement.type = "number";
+  inputNumeroElement.className = "formm-control";
+  inputNumeroElement.id = "numero";
+
+  div1Element.appendChild(inputNombreElement);
+  div1Element.insertAdjacentElement("afterbegin", labelNombreElement);
+
+  div2Element.appendChild(labelNumeroElement);
+  div2Element.insertAdjacentElement("beforeend", inputNombreElement);
+
+  formElement.appendChild(div1Element);
+  formElement.appendChild(div2Element);
+  fragFormServicios = formElement;
+
+ // sectionElement.appendChild(fragFormServicios);
 };
 
-const limpiarElementos = (lugarLimpiar) => {
-  lugarLimpiar.childNodes.forEach((element) => {
-    element.remove();
-  });
-}
-
-const FormularioInsert = () => {
-  limpiarElementos(sectionElement);
-  limpiarElementos(divH);
-}
+const crearFragmentoFormularioTickets = () => {};
