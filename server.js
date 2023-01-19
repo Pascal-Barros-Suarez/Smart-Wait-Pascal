@@ -37,12 +37,12 @@ require("./app/routes/servicio.routes")(app);
 require("./app/routes/usuarios.routes")(app);
 
 // require of routes auth
-//require("./app/routes/sessions.routes")(app);
+require("./app/auth/sessions.routes")(app);
 
 // end requires
 
 // set port, listen for requests
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3e3;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
