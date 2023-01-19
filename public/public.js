@@ -53,11 +53,13 @@ const sectionElement = document.createElement("section");
 sectionElement.className = "section";
 sectionElement.style.background = "rgb(41, 207, 179)";
 
+//btn servicio
 let btnServicioElement = document.createElement("button");
 btnServicioElement.className = "btn btn-success m-2";
 btnServicioElement.textContent = "Añadir";
 btnServicioElement.addEventListener("click", FormularioInsert, "Servicio");
 
+//btn ticket
 let btnTicketElement = document.createElement("button");
 btnTicketElement.className = "btn btn-success m-2";
 btnTicketElement.textContent = "Añadir";
@@ -67,6 +69,7 @@ let divAñadirElement = document.createElement("div");
 divAñadirElement.style.background = "rgb(41, 207, 179)";
 divAñadirElement.className = "m-0 h-100";
 
+// insertar elementos
 barraNavHTML.insertAdjacentElement("afterend", sectionElement);
 footerHtml.insertAdjacentElement("beforebegin", divAñadirElement);
 

@@ -1,7 +1,10 @@
 const express = require("express");
 const cors = require("cors");
-
+const session = require("express-session");
+const auth = require("./app/config/sessions.config");
 const app = express();
+
+app.use(session(auth.config));
 
 let corsOptions = {
   origin: "http://localhost:3000",
@@ -32,7 +35,10 @@ app.get("/login.html", (req, res) => {
 require("./app/routes/tickets.routes")(app);
 require("./app/routes/servicio.routes")(app);
 require("./app/routes/usuarios.routes")(app);
-require("./app/routes/login.routes")(app);
+
+// require of routes auth
+//require("./app/routes/sessions.routes")(app);
+
 // end requires
 
 // set port, listen for requests
