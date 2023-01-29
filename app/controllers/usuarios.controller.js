@@ -1,34 +1,49 @@
 const db = require("../models");
 const Usuario = db.usuarios;
 const Tickets = db.tickets;
+const session = require("express-session");
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
 
 // Create and Save a new Usuario
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
   // Validate request
+
   if (!req.body.nombre || !req.body.password) {
     res.status(400).send({ message: "Content can not be empty!" });
-    return;
-  }
+  } else {
+    let passwordHash;
+    bcrypt.hash(req.body.password, saltRounds, function (err, hash) {
+      if (err) {
+        console.log("Error: ", err);
+      } else {
+        passwordHash = hash;
+        console.log("Hash: ", hash);
 
-  // Create a User
-  const usuario = new Usuario({
-    _id: new db.mongoose.Types.ObjectId(),
-    nombre: req.body.nombre,
-    password: req.body.password,
-    admin: req.body.admin ? req.body.admin : false,
-  });
+        // Create a User
+        const usuario = new Usuario({
+          _id: new db.mongoose.Types.ObjectId(),
+          nombre: req.body.nombre,
+          password: passwordHash ? passwordHash : "no",
+          admin: req.body.admin ? req.body.admin : false,
+        });
 
-  // Save Usuario in the database
-  usuario
-    .save(usuario)
-    .then((data) => {
-      res.send(data);
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while creating the User.",
-      });
+        // Save Usuario in the database
+        usuario
+          .save(usuario)
+          .then((data) => {
+            console.log(data);
+            res.send("usuario registrado");
+          })
+          .catch((err) => {
+            res.status(500).send({
+              message:
+                err.message || "Some error occurred while creating the User.",
+            });
+          });
+      }
     });
+  }
 };
 
 // Retrieve all User from the database.
@@ -51,15 +66,25 @@ exports.findAll = (req, res) => {
 
 // Find all Admin Users
 exports.findAllAdmins = (req, res) => {
-  Usuario.find({ admin: true })
-    .then((data) => {
-      res.send(data);
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while retrieving Users.",
+  if (req.session.loggedin && req.session.role) {
+    Usuario.find({ admin: true })
+      .then((data) => {
+        res.send(data);
+      })
+      .catch((err) => {
+        res.status(500).send({
+          message: err.message || "Some error occurred while retrieving Users.",
+        });
       });
-    });
+  } else {
+    if (req.session.role === false) {
+      res
+        .status(401)
+        .send("No tiene suficientes Privilegios para acceder a este recurso!!");
+    } else {
+      res.status(401).send("debe estar logeado para acceder aqui!");
+    }
+  }
 };
 
 // Find a single Usuario with an id

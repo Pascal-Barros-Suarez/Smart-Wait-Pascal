@@ -1,6 +1,6 @@
 const express = require("express");
-const cors = require("cors");
 const session = require("express-session");
+const cors = require("cors");
 const auth = require("./app/config/sessions.config");
 const app = express();
 

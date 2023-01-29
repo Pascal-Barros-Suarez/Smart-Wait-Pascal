@@ -1,5 +1,13 @@
+//requires
+//const sessions = require("./sessions.controller");
+// sesiones de express en el front para express:
+
 // imports
+//consultas api
 import { getDatos } from "./clases/consultaApi.js";
+import { deleteDatos } from "./clases/consultaApi.js";
+import { anadirDatos } from "./clases/consultaApi.js";
+
 import { Ticket } from "./clases/tickets.js";
 import { Servicio } from "./clases/servicios.js";
 
@@ -19,24 +27,7 @@ const limpiarElementos = (lugarLimpiar) => {
   });
 };
 
-const FormularioInsert = (valor) => {
-  limpiarElementos(sectionElement);
-  limpiarElementos(divAñadirElement);
-
-  if (valor === "Servicio") {
-    crearFragmentoFormularioServicio();
-  } else if (valor === "Ticket") {
-    //
-  }
-};
-
 ////////////////////////////////  fin de funciones  ////////////////////////////////
-
-// declarar variables
-let resultadoConsulta;
-let fragTable = document.createDocumentFragment();
-let fragFormServicios = document.createDocumentFragment();
-let fragFormTickets = document.createDocumentFragment();
 
 // recoger datos del front
 // recoger botones del front
@@ -47,27 +38,51 @@ let botonServiciosHtml = document.getElementById("servicios");
 //recoger barra de navegacion para insertar debajo el section
 let barraNavHTML = document.getElementById("nav");
 let footerHtml = document.getElementById("footer");
+let logInOutHTML = document.getElementById("log-in-out");
+// declarar variables
+let resultadoConsulta;
+let fragTable = document.createDocumentFragment();
+let fragFormInsert = document.createDocumentFragment();
 
 //crear elementos
 const sectionElement = document.createElement("section");
-sectionElement.className = "section";
+sectionElement.className = "section h100";
 sectionElement.style.background = "rgb(41, 207, 179)";
 
 //btn servicio
 let btnServicioElement = document.createElement("button");
 btnServicioElement.className = "btn btn-success m-2";
 btnServicioElement.textContent = "Añadir";
-btnServicioElement.addEventListener("click", FormularioInsert, "Servicio");
+btnServicioElement.addEventListener("click", async () => {
+  crearFragmentoFormularioInsert("Servicio");
+  insertarHtml(fragFormInsert, sectionElement);
+});
 
 //btn ticket
 let btnTicketElement = document.createElement("button");
 btnTicketElement.className = "btn btn-success m-2";
 btnTicketElement.textContent = "Añadir";
-btnTicketElement.addEventListener("click", FormularioInsert, "Ticket");
+btnTicketElement.addEventListener("click", async () => {
+  crearFragmentoFormularioInsert("Ticket");
+  insertarHtml(fragFormInsert, sectionElement);
+});
 
 let divAñadirElement = document.createElement("div");
 divAñadirElement.style.background = "rgb(41, 207, 179)";
 divAñadirElement.className = "m-0 h-100";
+divAñadirElement.id = "divAñadir";
+// <a href="login.html" class="btnav p-1 ps-2 pe-2 text-white">log in</a>
+
+/* //log in
+let aLogInElement = document.createElement("a");
+aLogInElement.className = "btnav p-1 ps-2 pe-2 text-white";
+aLogInElement.innerText = "log in";
+aLogInElement.setAttribute("href", "login.html");
+
+//log out
+let aLogOutElement = document.createElement("a");
+aLogOutElement.className = "btnav p-1 ps-2 pe-2 text-white";
+aLogOutElement.innerText = "log out)"; */
 
 // insertar elementos
 barraNavHTML.insertAdjacentElement("afterend", sectionElement);
@@ -93,11 +108,20 @@ botonTicketsHtml.addEventListener("click", async () => {
 botonUsuariosHtml.addEventListener("click", async () => {
   resultadoConsulta = await getDatos("users/");
   console.log(resultadoConsulta);
-}); */
+}); 
+*/
+
+/* if (session.loggedin) {
+  //log-out
+  logInOutHTML.appendChild(aLogOutElement)
+} else {
+  //log-in
+  logInOutHTML.appendChild(aLogInElement)
+} */
 
 const crearFragmentoFetch = (consulta, valor) => {
-  console.log(valor);
-  console.log(consulta);
+  /*   console.log(valor);
+  console.log(consulta); */
 
   if (consulta.length <= 0) {
     let parrafoEstaVacioElement = document.createElement("p");
@@ -227,16 +251,8 @@ const crearFragmentoFetch = (consulta, valor) => {
         btnBorrar.addEventListener("click", () => {
           //hacer un fech para eliminar cuando se hace click
           const id = btnBorrar.id;
-          fetch(`/tickets/${id}`, {
-            method: "delete",
-            "Content-Type": "application/json",
-            body: JSON.stringify({ id: id }),
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              console.log(data);
-            });
-
+          const lugar = "tickets/";
+          deleteDatos(lugar, { id: id });
           console.log("hecho" + id);
         });
 
@@ -259,61 +275,70 @@ const crearFragmentoFetch = (consulta, valor) => {
   }
 };
 
-/* <form>
-  <div class="mb-3">
-    <label for="exampleInputEmail1" class="form-label">Email address</label>
-    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-    <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
-  </div>
-  <div class="mb-3">
-    <label for="exampleInputPassword1" class="form-label">Password</label>
-    <input type="password" class="form-control" id="exampleInputPassword1">
-  </div>
-  <div class="mb-3 form-check">
-    <input type="checkbox" class="form-check-input" id="exampleCheck1">
-    <label class="form-check-label" for="exampleCheck1">Check me out</label>
-  </div>
-  <button type="submit" class="btn btn-primary">Submit</button>
-</form> */
-
-const crearFragmentoFormularioServicio = () => {
+const crearFragmentoFormularioInsert = (valor) => {
+  sectionElement.className = "section h100 p-2";
+  limpiarElementos(divAñadirElement);
   let formElement = document.createElement("form");
+  formElement.className = "form mt-3 h100";
+  formElement.method = "Post";
+  formElement.hrez = "form mt-3 h100";
 
-  let div1Element = document.createElement("div");
-  div1Element.className = "mb-3";
+  if (valor === "Servicio") {
+    let H1Element = document.createElement("h1");
+    H1Element.className = "h1 m-3 text-center";
+    H1Element.innerText = "Añadir Servicio";
 
-  let div2Element = document.createElement("div");
-  div2Element.className = "mb-3";
+    let div1Element = document.createElement("div");
+    div1Element.className = "mb-3";
 
-  let labelNombreElement = document.createElement("label");
-  labelNombreElement.setAttribute("for", "nombre");
-  labelNombreElement.className = "formm-label";
+    let div2Element = document.createElement("div");
+    div2Element.className = "mb-3";
 
-  let labelNumeroElement = document.createElement("label");
-  labelNumeroElement.setAttribute("for", "numero");
-  labelNumeroElement.className = "formm-label";
+    let labelNombreElement = document.createElement("label");
+    labelNombreElement.setAttribute("for", "nombre");
+    labelNombreElement.className = "form-label";
+    labelNombreElement.innerText = "Nombre:";
 
-  let inputNombreElement = document.createElement("input");
-  inputNombreElement.type = "text";
-  inputNombreElement.className = "formm-input";
-  inputNombreElement.id = "nombre";
+    let labelNumeroElement = document.createElement("label");
+    labelNumeroElement.setAttribute("for", "numero");
+    labelNumeroElement.className = "form-label";
+    labelNumeroElement.innerText = "Numero ";
 
-  let inputNumeroElement = document.createElement("input");
-  inputNumeroElement.type = "number";
-  inputNumeroElement.className = "formm-control";
-  inputNumeroElement.id = "numero";
+    let inputNombreElement = document.createElement("input");
+    inputNombreElement.type = "text";
+    inputNombreElement.className = "form-control";
+    inputNombreElement.id = "nombre ";
 
-  div1Element.appendChild(inputNombreElement);
-  div1Element.insertAdjacentElement("afterbegin", labelNombreElement);
+    let inputNumeroElement = document.createElement("input");
+    inputNumeroElement.type = "number";
+    inputNumeroElement.className = "form-control";
+    inputNumeroElement.id = "numero";
 
-  div2Element.appendChild(labelNumeroElement);
-  div2Element.insertAdjacentElement("beforeend", inputNombreElement);
+    let btnAñadir = document.createElement("button");
+    btnAñadir.className = "btn btn-success m-2";
+    btnAñadir.innerText = "Añadir";
+    btnAñadir.type = "submit";
+    btnAñadir.addEventListener("click", () => {
+      const formData = new FormData();
+      formData.append("nombre", inputNombreElement.value);
+      formData.append("numero", inputNumeroElement.value);
+      anadirDatos("", formData);
+    });
 
-  formElement.appendChild(div1Element);
-  formElement.appendChild(div2Element);
-  fragFormServicios = formElement;
+    div1Element.appendChild(inputNombreElement);
+    div1Element.insertAdjacentElement("afterbegin", labelNombreElement);
 
- // sectionElement.appendChild(fragFormServicios);
+    div2Element.appendChild(labelNumeroElement);
+    div2Element.insertAdjacentElement("beforeend", inputNumeroElement);
+
+    formElement.appendChild(div1Element);
+    formElement.appendChild(div2Element);
+    formElement.appendChild(btnAñadir);
+    formElement.insertAdjacentElement("afterbegin", H1Element);
+  } else if (valor === "Ticket") {
+    /////////
+  } else {
+    //////////////
+  }
+  insertarHtml(formElement, fragFormInsert);
 };
-
-const crearFragmentoFormularioTickets = () => {};

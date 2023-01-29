@@ -8,12 +8,22 @@
 body {
   background-color: #fc7d1c;
 }
+
+/*
+ .login {
+  width: 400px;
+  background-color: #000000;
+  box-shadow: 0 0 9px 0 rgba(255, 255, 255, 0.3);
+  margin: 100px auto;
+}*/
+
 .login {
   width: 400px;
   background-color: #ffffff;
   box-shadow: 0 0 9px 0 rgba(0, 0, 0, 0.3);
   margin: 100px auto;
 }
+
 .login h1 {
   text-align: center;
   color: #5b6574;

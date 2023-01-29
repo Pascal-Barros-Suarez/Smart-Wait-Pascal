@@ -1,5 +1,6 @@
 module.exports = (app) => {
   const sessions = require("./sessions.controller");
+  const user = require("../controllers/usuarios.controller");
 
   let router = require("express").Router();
 
@@ -9,11 +10,11 @@ module.exports = (app) => {
   // http://localhost:3000/login/home
   router.get("/home", sessions.home);
 
-  /*   // http://localhost:3000/login/log-out
-  router.get("/logout", sessions.logout);
-
   // http://localhost:3000/login/register
-  router.get("/register", sessions.register) */
+  router.post("/register", user.create);
+
+  // http://localhost:3000/login/log-out
+  router.get("/logout", sessions.logOut);
 
   app.use("/login", router);
 };
