@@ -31,11 +31,12 @@ exports.auth = async (req, res) => {
             res.redirect("/login/home");
             res.end();
           } else {
-            console.log("no coinciden" + password, data.password);
+            res.send("Usuario y/o Contraseña Incorrecta");
           }
+          // res.redirect("/login.html");
         });
       } else {
-        res.status(401).send("Usuario y/o Contraseña Incorrecta");
+        res.status(401).send("Usuario No encontado");
       }
       //res.end();
     });
@@ -67,11 +68,11 @@ exports.logOut = (req, res) => {
       .send("no puedes cerrar sesion debido a que no estas logueado!");
   } else {
     // Not logged in
+    console.log(req.session.username, "se esta desonectando");
     req.session.destroy((err) => {
       res.redirect("/"); // will always fire after session is destroyed
       //res.end("has cerrado sesion satisfactoriamente!");
       res.end();
     });
   }
-  
 };
