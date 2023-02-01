@@ -280,8 +280,8 @@ const crearFragmentoFormularioInsert = (valor) => {
   limpiarElementos(divAñadirElement);
   let formElement = document.createElement("form");
   formElement.className = "form mt-3 h100";
-  formElement.method = "Post";
-  formElement.hrez = "form mt-3 h100";
+  /*   formElement.method = "Post";
+  formElement.hrez = "form mt-3 h100"; */
 
   if (valor === "Servicio") {
     let H1Element = document.createElement("h1");
@@ -307,7 +307,7 @@ const crearFragmentoFormularioInsert = (valor) => {
     let inputNombreElement = document.createElement("input");
     inputNombreElement.type = "text";
     inputNombreElement.className = "form-control";
-    inputNombreElement.id = "nombre ";
+    inputNombreElement.id = "nombre";
 
     let inputNumeroElement = document.createElement("input");
     inputNumeroElement.type = "number";
@@ -318,11 +318,20 @@ const crearFragmentoFormularioInsert = (valor) => {
     btnAñadir.className = "btn btn-success m-2";
     btnAñadir.innerText = "Añadir";
     btnAñadir.type = "submit";
-    btnAñadir.addEventListener("click", () => {
-      const formData = new FormData();
-      formData.append("nombre", inputNombreElement.value);
-      formData.append("numero", inputNumeroElement.value);
-      anadirDatos("", formData);
+    btnAñadir.addEventListener("click", async (e) => {
+      e.preventDefault();
+      const formData = {
+        nombre: document.querySelector("#nombre").value,
+        numero: document.querySelector("#numero").value,
+      };
+      /*       const formData = [];
+      formData[0] = "nombre";
+      formData[1] = document.querySelector("#numero").value;
+      formData[2] = "numero";
+      formData[3] = document.querySelector("#numero").value; */
+
+      console.log(formData);
+      await /*  */ anadirDatos("services/", formData);
     });
 
     div1Element.appendChild(inputNombreElement);

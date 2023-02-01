@@ -22,7 +22,7 @@ const deleteDatos = async (lugar, paramentros) => {
 const anadirDatos = async (lugar, formData) => {
   return fetch(`http://localhost:3000/${lugar}`, {
     method: "POST",
-    body: formData,
+    body: JSON.stringify(formData),
   })
     .then((response) => response.json())
     .then((data) => {
