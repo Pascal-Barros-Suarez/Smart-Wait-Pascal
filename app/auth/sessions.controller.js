@@ -36,7 +36,7 @@ exports.auth = async (req, res) => {
                 loggedin: true,
                 role: data[0].admin,
               },
-              TOKEN_SECRET
+              TOKEN_SECRET,{expiresIn: '1y'}
             );
 
             res.header("auth-token", token).json({ datos: { token } });
