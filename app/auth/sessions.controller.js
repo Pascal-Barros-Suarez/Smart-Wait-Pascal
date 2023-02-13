@@ -1,7 +1,13 @@
+//imports
 const db = require("../models");
-const User = db.usuarios;
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+
+//variable zone
+const User = db.usuarios;
 const saltRounds = 10;
+const TOKEN_SECRET = "secretKey";
+const blacklist = [];
 
 exports.auth = async (req, res) => {
   // Capture the input fields
@@ -15,7 +21,6 @@ exports.auth = async (req, res) => {
       nombre: username,
     }).then((data) => {
       console.log(data);
-      //res.send(data);
       if (data.length == 1) {
         bcrypt.compare(password, data[0].password, function (err, result) {
           if (err) {
@@ -23,12 +28,21 @@ exports.auth = async (req, res) => {
           } else if (result) {
             console.log("Passwords match");
 
-            // Authenticate the user
-            req.session.loggedin = true;
-            req.session.username = username;
-            req.session.role = data[0].admin;
+            // crear token
+            const token = jwt.sign(
+              // datos de carga útil
+              {
+                nombre: username,
+                loggedin: true,
+                role: data[0].admin,
+              },
+              TOKEN_SECRET
+            );
+
+            res.header("auth-token", token).json({ datos: { token } });
+
             // Redirect to home page
-            res.redirect("/login/home");
+            //res.redirect("/login/home");
             res.end();
           } else {
             res.send("Usuario y/o Contraseña Incorrecta");
