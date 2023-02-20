@@ -1,9 +1,11 @@
 const db = require("../models");
 const Usuario = db.usuarios;
 const Tickets = db.tickets;
-const session = require("express-session");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
+const jwt = require("jsonwebtoken");
+const tokenConfig = require("../config/jwt.config");
+const blacklist = tokenConfig.config.blacklist;
 
 // Create and Save a new Usuario
 exports.create = async (req, res) => {
@@ -66,23 +68,38 @@ exports.findAll = (req, res) => {
 
 // Find all Admin Users
 exports.findAllAdmins = (req, res) => {
-  if (req.session.loggedin && req.session.role) {
-    Usuario.find({ admin: true })
-      .then((data) => {
-        res.send(data);
-      })
-      .catch((err) => {
-        res.status(500).send({
-          message: err.message || "Some error occurred while retrieving Users.",
-        });
-      });
+  const accessToken = req.headers["authorization"].split(" ")[1];
+  if (blacklist.includes(accessToken)) {
+    res.status(401).send({ error: "Expired Tokend" });
+    res.end();
   } else {
-    if (req.session.role === false) {
-      res
-        .status(401)
-        .send("No tiene suficientes Privilegios para acceder a este recurso!!");
+    const decodedToken = jwt.verify(
+      accessToken,
+      tokenConfig.config.TOKEN_SECRET
+    );
+    // console.log(decodedToken);
+
+    if (decodedToken.loggedin && decodedToken.role) {
+      Usuario.find({ admin: true })
+        .then((data) => {
+          res.send(data);
+        })
+        .catch((err) => {
+          res.status(500).send({
+            message:
+              err.message || "Some error occurred while retrieving Users.",
+          });
+        });
     } else {
-      res.status(401).send("debe estar logeado para acceder aqui!");
+      if (decodedToken.role === false) {
+        res
+          .status(401)
+          .send(
+            "No tiene suficientes Privilegios para acceder a este recurso!!"
+          );
+      } else {
+        res.status(401).send("debe estar logeado para acceder aqui!");
+      }
     }
   }
 };

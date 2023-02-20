@@ -2,12 +2,15 @@
 const db = require("../models");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-
+const tokenConfig = require("../config/jwt.config");
+const blacklist = tokenConfig.config.blacklist;
+console.log(tokenConfig);
+/* console.log(blacklist);
+ */
 //variable zone
 const User = db.usuarios;
 const saltRounds = 10;
-const TOKEN_SECRET = "secretKey";
-const blacklist = [];
+//const blacklist = ; tokenConfig.config.blacklist
 
 exports.auth = async (req, res) => {
   // Capture the input fields
@@ -36,7 +39,8 @@ exports.auth = async (req, res) => {
                 loggedin: true,
                 role: data[0].admin,
               },
-              TOKEN_SECRET,{expiresIn: '1y'}
+              tokenConfig.config.TOKEN_SECRET,
+              { expiresIn: "2h" }
             );
 
             res.header("auth-token", token).json({ datos: { token } });
@@ -62,31 +66,52 @@ exports.auth = async (req, res) => {
 
 exports.home = (req, res) => {
   // If the user is loggedin
-  if (req.session.loggedin) {
-    // Output username
-    res.send(
-      "Te has logueado satisfactoriamente;  " + req.session.username + "!"
-    );
+  const accessToken = req.headers["authorization"].split(" ")[1];
+  if (blacklist.includes(accessToken)) {
+    res.status(401).send({ error: "Expired Tokend" });
+    res.end();
   } else {
-    // Not logged in
-    res.status(401).send("¡Inicia sesión para ver esta página!");
+    try {
+      const decodedToken = jwt.verify(
+        accessToken,
+        tokenConfig.config.TOKEN_SECRET
+      );
+      const username = decodedToken.nombre;
+
+      // Output username
+      if (decodedToken.loggedin) {
+        res.send("Te has logueado satisfactoriamente;  " + username + "!");
+      } else {
+        // Not logged in
+        res.status(401).send("¡Inicia sesión para ver esta página!");
+      }
+      res.end();
+    } catch (error) {
+      res.status(401).send({ error: "Hay que validarse primero" });
+      res.end();
+    }
   }
-  res.end();
 };
 
 exports.logOut = (req, res) => {
   // If the user is logged in
-  if (!req.session.loggedin) {
+  const accessToken = req.headers["authorization"].split(" ")[1];
+  const decodedToken = jwt.verify(accessToken, tokenConfig.config.TOKEN_SECRET);
+
+  if (decodedToken.loggedin) {
+    console.log(decodedToken.nombre, "se esta desonectando");
+    invalidateToken(accessToken);
+    res.redirect("/");
+  } else {
+    // Not logged in
     res
       .status(401)
       .send("no puedes cerrar sesion debido a que no estas logueado!");
-  } else {
-    // Not logged in
-    console.log(req.session.username, "se esta desonectando");
-    req.session.destroy((err) => {
-      res.redirect("/"); // will always fire after session is destroyed
-      //res.end("has cerrado sesion satisfactoriamente!");
-      res.end();
-    });
   }
+  res.end();
+};
+
+const invalidateToken = (token) => {
+  blacklist.push(token);
+  console.log(blacklist);
 };

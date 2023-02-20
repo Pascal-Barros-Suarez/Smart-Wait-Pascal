@@ -1,10 +1,6 @@
 const express = require("express");
-const session = require("express-session");
 const cors = require("cors");
-const auth = require("./app/config/sessions.config");
 const app = express();
-
-app.use(session(auth.config));
 
 let corsOptions = {
   origin: "http://localhost:3000",
