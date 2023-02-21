@@ -9,6 +9,7 @@ h1 {
   border: none;
   cursor: pointer;
   transition: 0.2s ease;
+  text-decoration: none;
 }
 
 .btnBorrar {

@@ -27,6 +27,13 @@ const limpiarElementos = (lugarLimpiar) => {
   });
 };
 
+const conseguirTablaServicio = async () => {
+  resultadoConsulta = await getDatos("services/");
+  crearFragmentoFetch(resultadoConsulta, "servicios");
+  insertarHtml(fragTable, sectionElement);
+  insertarHtml(btnServicioElement, divAñadirElement);
+};
+
 ////////////////////////////////  fin de funciones  ////////////////////////////////
 
 // recoger datos del front
@@ -90,10 +97,7 @@ footerHtml.insertAdjacentElement("beforebegin", divAñadirElement);
 
 // añadir los eventos para el fech
 botonServiciosHtml.addEventListener("click", async () => {
-  resultadoConsulta = await getDatos("services/");
-  crearFragmentoFetch(resultadoConsulta, "servicios");
-  insertarHtml(fragTable, sectionElement);
-  insertarHtml(btnServicioElement, divAñadirElement);
+  conseguirTablaServicio();
 });
 
 botonTicketsHtml.addEventListener("click", async () => {
@@ -111,18 +115,7 @@ botonUsuariosHtml.addEventListener("click", async () => {
 }); 
 */
 
-/* if (session.loggedin) {
-  //log-out
-  logInOutHTML.appendChild(aLogOutElement)
-} else {
-  //log-in
-  logInOutHTML.appendChild(aLogInElement)
-} */
-
 const crearFragmentoFetch = (consulta, valor) => {
-  /*   console.log(valor);
-  console.log(consulta); */
-
   if (consulta.length <= 0) {
     let parrafoEstaVacioElement = document.createElement("p");
     parrafoEstaVacioElement.className = "text-center m-0 p-3";
@@ -275,13 +268,18 @@ const crearFragmentoFetch = (consulta, valor) => {
   }
 };
 
+//////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////
+
 const crearFragmentoFormularioInsert = (valor) => {
   sectionElement.className = "section h100 p-2";
   limpiarElementos(divAñadirElement);
   let formElement = document.createElement("form");
   formElement.className = "form mt-3 h100";
-  /*   formElement.method = "Post";
-  formElement.hrez = "form mt-3 h100"; */
+  //formElement.setAttribute('method', "Post");
+  //formElement.setAttribute('action', "/services/");
 
   if (valor === "Servicio") {
     let H1Element = document.createElement("h1");
@@ -324,14 +322,9 @@ const crearFragmentoFormularioInsert = (valor) => {
         nombre: document.querySelector("#nombre").value,
         numero: document.querySelector("#numero").value,
       };
-      /*       const formData = [];
-      formData[0] = "nombre";
-      formData[1] = document.querySelector("#numero").value;
-      formData[2] = "numero";
-      formData[3] = document.querySelector("#numero").value; */
 
-      console.log(formData);
-      await /*  */ anadirDatos("services/", formData);
+      await anadirDatos("services/", formData);
+      conseguirTablaServicio();
     });
 
     div1Element.appendChild(inputNombreElement);
@@ -345,6 +338,8 @@ const crearFragmentoFormularioInsert = (valor) => {
     formElement.appendChild(btnAñadir);
     formElement.insertAdjacentElement("afterbegin", H1Element);
   } else if (valor === "Ticket") {
+    formElement.setAttribute("action", "/tickets/");
+
     /////////
   } else {
     //////////////

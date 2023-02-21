@@ -20,16 +20,18 @@ const deleteDatos = async (lugar, paramentros) => {
 };
 
 const anadirDatos = async (lugar, formData) => {
-  return fetch(`http://localhost:3000/${lugar}`, {
-    method: "POST",
-    body: JSON.stringify(formData),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      console.log("Respuesta del servidor: ", data);
-    })
-    .catch((error) => {
-      console.error("Error en la petición: ", error);
+  try {
+    const response = await fetch(`http://localhost:3000/${lugar}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
     });
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    console.error(error);
+  }
 };
 export { getDatos, deleteDatos, anadirDatos };
