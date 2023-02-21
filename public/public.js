@@ -165,7 +165,7 @@ const crearFragmentoFetch = (consulta, valor) => {
 
         btnBorrar.addEventListener("click", () => {
           const id = btnUpdate.id;
-          deleteData(`/services/${id}`, { id: id });
+          deleteData(`services/${id}`, { id: id });
           console.log("borrado" + id);
         });
         // boton para actualizar
@@ -175,15 +175,21 @@ const crearFragmentoFetch = (consulta, valor) => {
         btnUpdate.id = servicio._id;
 
         btnUpdate.addEventListener("click", async () => {
-          const id = btnUpdate.id;
-
           ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-          await crearFragmentoFormularioUpdate("Servicio", id);
-          console.log(fragFormUpdate);
-          insertarHtml(fragFormUpdate, sectionElement);
+          console.log("en boton update", fragFormUpdate);
 
-          console.log("actualizado" + id);
+          let updateForm;
+          updateForm = await crearFragmentoFormularioUpdate(
+            "Servicio",
+            btnUpdate.id
+          );
+          console.log("despues", updateForm);
+          insertarHtml(updateForm, fragFormUpdate);
+          insertarHtml(fragFormUpdate, sectionElement);
+          console.log("en boton update", fragFormUpdate);
+
+          console.log("actualizado " + btnUpdate.id);
         });
 
         //añadir a la tabla
@@ -334,8 +340,6 @@ const crearFragmentoFormularioInsert = (valor) => {
     formElement.appendChild(btnAñadir);
     formElement.insertAdjacentElement("afterbegin", H1Element);
   } else if (valor === "Ticket") {
-    formElement.setAttribute("action", "/tickets/");
-
     /////////
   } else {
     //////////////
@@ -346,12 +350,12 @@ const crearFragmentoFormularioInsert = (valor) => {
 const crearFragmentoFormularioUpdate = async (valor, id) => {
   sectionElement.className = "section h100 p-2";
   limpiarElementos(divAñadirElement);
-  let formElement = document.createElement("form");
-  formElement.className = "form mt-3 h100";
+  let formElementUpdate = document.createElement("form");
+  formElementUpdate.className = "form mt-3 h100";
 
   if (valor === "Servicio") {
     const servicio = await getData(`services/${id}`);
-    console.log(servicio);
+    // console.log(servicio);
 
     let H1Element = document.createElement("h1");
     H1Element.className = "h1 m-3 text-center";
@@ -387,11 +391,11 @@ const crearFragmentoFormularioUpdate = async (valor, id) => {
     inputNumeroElement.value = servicio.numeroActual;
     inputNumeroElement.placeholder = servicio.numeroActual;
 
-    let btnAñadir = document.createElement("button");
-    btnAñadir.className = "btn btn-success m-2";
-    btnAñadir.innerText = "Actualizar";
-    btnAñadir.type = "submit";
-    btnAñadir.addEventListener("click", async (e) => {
+    let btnActualizar = document.createElement("button");
+    btnActualizar.className = "btn btn-success m-2";
+    btnActualizar.innerText = "Actualizar";
+    btnActualizar.type = "submit";
+    btnActualizar.addEventListener("click", async (e) => {
       e.preventDefault();
       const formData = {
         nombre: document.querySelector("#nombre").value,
@@ -399,7 +403,7 @@ const crearFragmentoFormularioUpdate = async (valor, id) => {
       };
 
       await updateData(`services/${id}`, formData);
-      //conseguirTablaServicio();
+      conseguirTablaServicio();
     });
 
     div1Element.appendChild(inputNombreElement);
@@ -408,17 +412,16 @@ const crearFragmentoFormularioUpdate = async (valor, id) => {
     div2Element.appendChild(labelNumeroElement);
     div2Element.insertAdjacentElement("beforeend", inputNumeroElement);
 
-    formElement.appendChild(div1Element);
-    formElement.appendChild(div2Element);
-    formElement.appendChild(btnAñadir);
-    formElement.insertAdjacentElement("afterbegin", H1Element);
+    formElementUpdate.appendChild(div1Element);
+    formElementUpdate.appendChild(div2Element);
+    formElementUpdate.appendChild(btnActualizar);
+    formElementUpdate.insertAdjacentElement("afterbegin", H1Element);
   } else if (valor === "Ticket") {
     /////////
   } else {
     //////////////
   }
-  console.log(formElement);
-  insertarHtml(formElement, fragFormUpdate);
-  // insertarHtml(fragFormUpdate, sectionElement);
-
+  console.log("al crear el form", formElementUpdate);
+  return formElementUpdate;
+  // insertarHtml(formElementUpdate, sectionElement);
 };
