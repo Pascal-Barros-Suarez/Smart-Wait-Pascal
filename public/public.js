@@ -168,6 +168,7 @@ const crearFragmentoFetch = (consulta, valor) => {
           deleteData(`services/${id}`, { id: id });
           console.log("borrado" + id);
         });
+
         // boton para actualizar
         btnUpdate.innerText = "Actualizar";
         btnUpdate.type = "submit";
@@ -175,21 +176,12 @@ const crearFragmentoFetch = (consulta, valor) => {
         btnUpdate.id = servicio._id;
 
         btnUpdate.addEventListener("click", async () => {
-          ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-          console.log("en boton update", fragFormUpdate);
-
-          let updateForm;
-          updateForm = await crearFragmentoFormularioUpdate(
+          let updateForm = crearFragmentoFormularioUpdate(
             "Servicio",
             btnUpdate.id
           );
           console.log("despues", updateForm);
-          insertarHtml(updateForm, fragFormUpdate);
           insertarHtml(fragFormUpdate, sectionElement);
-          console.log("en boton update", fragFormUpdate);
-
-          console.log("actualizado " + btnUpdate.id);
         });
 
         //añadir a la tabla
@@ -355,7 +347,7 @@ const crearFragmentoFormularioUpdate = async (valor, id) => {
 
   if (valor === "Servicio") {
     const servicio = await getData(`services/${id}`);
-    // console.log(servicio);
+    console.log(servicio);
 
     let H1Element = document.createElement("h1");
     H1Element.className = "h1 m-3 text-center";
@@ -388,8 +380,8 @@ const crearFragmentoFormularioUpdate = async (valor, id) => {
     inputNumeroElement.type = "number";
     inputNumeroElement.className = "form-control";
     inputNumeroElement.id = "numero";
-    inputNumeroElement.value = servicio.numeroActual;
-    inputNumeroElement.placeholder = servicio.numeroActual;
+    inputNumeroElement.value = servicio.numero;
+    inputNumeroElement.placeholder = servicio.numero;
 
     let btnActualizar = document.createElement("button");
     btnActualizar.className = "btn btn-success m-2";
@@ -403,6 +395,9 @@ const crearFragmentoFormularioUpdate = async (valor, id) => {
       };
 
       await updateData(`services/${id}`, formData);
+      console.log("Servicio " + servicio.nombre + " actualizado", {
+        a: formData,
+      });
       conseguirTablaServicio();
     });
 
@@ -422,6 +417,6 @@ const crearFragmentoFormularioUpdate = async (valor, id) => {
     //////////////
   }
   console.log("al crear el form", formElementUpdate);
+  insertarHtml(formElementUpdate, sectionElement);
   return formElementUpdate;
-  // insertarHtml(formElementUpdate, sectionElement);
 };
