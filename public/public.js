@@ -4,9 +4,12 @@
 
 // imports
 //consultas api
-import { getDatos } from "./clases/consultaApi.js";
-import { deleteDatos } from "./clases/consultaApi.js";
-import { anadirDatos } from "./clases/consultaApi.js";
+import {
+  getData,
+  insertData,
+  updateData,
+  deleteData,
+} from "./clases/consultaApi.js";
 
 import { Ticket } from "./clases/tickets.js";
 import { Servicio } from "./clases/servicios.js";
@@ -28,7 +31,7 @@ const limpiarElementos = (lugarLimpiar) => {
 };
 
 const conseguirTablaServicio = async () => {
-  resultadoConsulta = await getDatos("services/");
+  resultadoConsulta = await getData("services/");
   crearFragmentoFetch(resultadoConsulta, "servicios");
   insertarHtml(fragTable, sectionElement);
   insertarHtml(btnServicioElement, divAñadirElement);
@@ -50,6 +53,7 @@ let logInOutHTML = document.getElementById("log-in-out");
 let resultadoConsulta;
 let fragTable = document.createDocumentFragment();
 let fragFormInsert = document.createDocumentFragment();
+let fragFormUpdate = document.createDocumentFragment();
 
 //crear elementos
 const sectionElement = document.createElement("section");
@@ -78,18 +82,6 @@ let divAñadirElement = document.createElement("div");
 divAñadirElement.style.background = "rgb(41, 207, 179)";
 divAñadirElement.className = "m-0 h-100";
 divAñadirElement.id = "divAñadir";
-// <a href="login.html" class="btnav p-1 ps-2 pe-2 text-white">log in</a>
-
-/* //log in
-let aLogInElement = document.createElement("a");
-aLogInElement.className = "btnav p-1 ps-2 pe-2 text-white";
-aLogInElement.innerText = "log in";
-aLogInElement.setAttribute("href", "login.html");
-
-//log out
-let aLogOutElement = document.createElement("a");
-aLogOutElement.className = "btnav p-1 ps-2 pe-2 text-white";
-aLogOutElement.innerText = "log out)"; */
 
 // insertar elementos
 barraNavHTML.insertAdjacentElement("afterend", sectionElement);
@@ -101,7 +93,7 @@ botonServiciosHtml.addEventListener("click", async () => {
 });
 
 botonTicketsHtml.addEventListener("click", async () => {
-  resultadoConsulta = await getDatos("tickets/");
+  resultadoConsulta = await getData("tickets/");
   crearFragmentoFetch(resultadoConsulta, "tickets");
   insertarHtml(fragTable, sectionElement);
   insertarHtml(btnTicketElement, divAñadirElement);
@@ -110,7 +102,7 @@ botonTicketsHtml.addEventListener("click", async () => {
 /*  usuarios:
 
 botonUsuariosHtml.addEventListener("click", async () => {
-  resultadoConsulta = await getDatos("users/");
+  resultadoConsulta = await getData("users/");
   console.log(resultadoConsulta);
 }); 
 */
@@ -158,36 +150,45 @@ const crearFragmentoFetch = (consulta, valor) => {
         let tdCampo3 = document.createElement("td");
         let formborrar = document.createElement("form");
         let btnBorrar = document.createElement("button");
+        let btnUpdate = document.createElement("button");
 
         // rellenar los campos
         tdCampo1.innerText = servicio.nombre;
         tdCampo2.innerText = servicio.numero;
-        tdCampo3.className = "espaciadoBoton";
+        tdCampo3.className = "espaciadoBoton p-2";
 
         // formulario para borrar
         btnBorrar.innerText = "borrar";
         btnBorrar.type = "submit";
-        btnBorrar.className = "btnBorrar";
+        btnBorrar.className = "btnBorrar mt-1 mb-1 me-1";
         btnBorrar.id = servicio._id;
 
         btnBorrar.addEventListener("click", () => {
-          //hacer un fech para eliminar cuando se hace click
-          const id = btnBorrar.id;
-          fetch(`/services/${id}`, {
-            method: "delete",
-            "Content-Type": "application/json",
-            body: JSON.stringify({ id: id }),
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              console.log(data);
-            });
+          const id = btnUpdate.id;
+          deleteData(`/services/${id}`, { id: id });
+          console.log("borrado" + id);
+        });
+        // boton para actualizar
+        btnUpdate.innerText = "Actualizar";
+        btnUpdate.type = "submit";
+        btnUpdate.className = "btnBorrar mt-1 mb-1 me-1";
+        btnUpdate.id = servicio._id;
 
-          console.log("hecho" + id);
+        btnUpdate.addEventListener("click", async () => {
+          const id = btnUpdate.id;
+
+          ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+          await crearFragmentoFormularioUpdate("Servicio", id);
+          console.log(fragFormUpdate);
+          insertarHtml(fragFormUpdate, sectionElement);
+
+          console.log("actualizado" + id);
         });
 
         //añadir a la tabla
         formborrar.appendChild(btnBorrar);
+        formborrar.appendChild(btnUpdate);
         tdCampo3.appendChild(formborrar);
 
         tr.appendChild(tdCampo2);
@@ -245,7 +246,7 @@ const crearFragmentoFetch = (consulta, valor) => {
           //hacer un fech para eliminar cuando se hace click
           const id = btnBorrar.id;
           const lugar = "tickets/";
-          deleteDatos(lugar, { id: id });
+          deleteData(lugar, { id: id });
           console.log("hecho" + id);
         });
 
@@ -267,11 +268,6 @@ const crearFragmentoFetch = (consulta, valor) => {
     insertarHtml(tableElement, fragTable);
   }
 };
-
-//////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////
 
 const crearFragmentoFormularioInsert = (valor) => {
   sectionElement.className = "section h100 p-2";
@@ -323,7 +319,7 @@ const crearFragmentoFormularioInsert = (valor) => {
         numero: document.querySelector("#numero").value,
       };
 
-      await anadirDatos("services/", formData);
+      await insertData("services/", formData);
       conseguirTablaServicio();
     });
 
@@ -345,4 +341,84 @@ const crearFragmentoFormularioInsert = (valor) => {
     //////////////
   }
   insertarHtml(formElement, fragFormInsert);
+};
+
+const crearFragmentoFormularioUpdate = async (valor, id) => {
+  sectionElement.className = "section h100 p-2";
+  limpiarElementos(divAñadirElement);
+  let formElement = document.createElement("form");
+  formElement.className = "form mt-3 h100";
+
+  if (valor === "Servicio") {
+    const servicio = await getData(`services/${id}`);
+    console.log(servicio);
+
+    let H1Element = document.createElement("h1");
+    H1Element.className = "h1 m-3 text-center";
+    H1Element.innerText = "Actualizar Servicio";
+
+    let div1Element = document.createElement("div");
+    div1Element.className = "mb-3";
+
+    let div2Element = document.createElement("div");
+    div2Element.className = "mb-3";
+
+    let labelNombreElement = document.createElement("label");
+    labelNombreElement.setAttribute("for", "nombre");
+    labelNombreElement.className = "form-label";
+    labelNombreElement.innerText = "Nombre:";
+
+    let labelNumeroElement = document.createElement("label");
+    labelNumeroElement.setAttribute("for", "numero");
+    labelNumeroElement.className = "form-label";
+    labelNumeroElement.innerText = "Numero ";
+
+    let inputNombreElement = document.createElement("input");
+    inputNombreElement.type = "text";
+    inputNombreElement.className = "form-control";
+    inputNombreElement.id = "nombre";
+    inputNombreElement.value = servicio.nombre;
+    inputNombreElement.placeholder = servicio.nombre;
+
+    let inputNumeroElement = document.createElement("input");
+    inputNumeroElement.type = "number";
+    inputNumeroElement.className = "form-control";
+    inputNumeroElement.id = "numero";
+    inputNumeroElement.value = servicio.numeroActual;
+    inputNumeroElement.placeholder = servicio.numeroActual;
+
+    let btnAñadir = document.createElement("button");
+    btnAñadir.className = "btn btn-success m-2";
+    btnAñadir.innerText = "Actualizar";
+    btnAñadir.type = "submit";
+    btnAñadir.addEventListener("click", async (e) => {
+      e.preventDefault();
+      const formData = {
+        nombre: document.querySelector("#nombre").value,
+        numero: document.querySelector("#numero").value,
+      };
+
+      await updateData(`services/${id}`, formData);
+      //conseguirTablaServicio();
+    });
+
+    div1Element.appendChild(inputNombreElement);
+    div1Element.insertAdjacentElement("afterbegin", labelNombreElement);
+
+    div2Element.appendChild(labelNumeroElement);
+    div2Element.insertAdjacentElement("beforeend", inputNumeroElement);
+
+    formElement.appendChild(div1Element);
+    formElement.appendChild(div2Element);
+    formElement.appendChild(btnAñadir);
+    formElement.insertAdjacentElement("afterbegin", H1Element);
+  } else if (valor === "Ticket") {
+    /////////
+  } else {
+    //////////////
+  }
+  console.log(formElement);
+  insertarHtml(formElement, fragFormUpdate);
+  // insertarHtml(fragFormUpdate, sectionElement);
+
 };
